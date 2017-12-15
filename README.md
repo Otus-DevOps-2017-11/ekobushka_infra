@@ -81,7 +81,7 @@ gcloud compute instances create reddit-app\
   --tags puma-server \
   --restart-on-failure \
   --zone=europe-west1-b \
-  --metadata "startup-script-url="
+  --metadata "startup-script-url=https://raw.githubusercontent.com/Otus-DevOps-2017-11/ekobushka_infra/Infra-2/startup_script.sh"
 ```
 
 После выполнения данной команды получим соданный виртуальный хост с полностью рабочим приложением.
