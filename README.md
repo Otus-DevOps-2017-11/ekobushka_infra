@@ -83,6 +83,11 @@ gcloud compute instances create reddit-app\
   --zone=europe-west1-b \
   --metadata "startup-script-url=https://raw.githubusercontent.com/Otus-DevOps-2017-11/ekobushka_infra/Infra-2/startup_script.sh"
 ```
+Для того чтобы использовать скрипт находящийся на локальном хосте, нужно использовать вместо опции startup-script-url использовать startup-script. Предыдущую команду нужно изменить в опции
+```bash
+--metadata-from-file startup-script=startup_script.sh
+```
+и запускать ее нужно в папке содержащей скрипт **startup_script.sh**
 
 После выполнения данной команды получим соданный виртуальный хост с полностью рабочим приложением.
 
