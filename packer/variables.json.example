@@ -1,0 +1,6 @@
+{
+    "gcp_project_id": "test-132681",
+    "gcp_source_image_family": "ubuntu-1204-lts",
+    "gcp_source_image_family_deploy_based": "reddit-base",
+    "gcp_machine_type": "f1-micro"
+}
