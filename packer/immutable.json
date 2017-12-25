@@ -1,0 +1,33 @@
+{
+    "Variables":
+      {
+      "gcp_project_id": null,
+      "gcp_source_image_family": null,
+      "gcp_source_image_family_deploy_based": null,
+      "gcp_machine_type": "f1-micro"
+      },
+    "builders": [
+      {
+      "type": "googlecompute",
+      "project_id": "{{user `gcp_project_id`}}",
+      "image_name": "reddit-full-{{timestamp}}",
+      "image_family": "reddit-full",
+      "source_image_family": "{{user `gcp_source_image_family_deploy_based`}}",
+      "zone": "europe-west1-b",
+      "ssh_username": "appuser",
+      "machine_type": "{{user `gcp_machine_type`}}",
+      "image_description": "Otus homework-07. Creating a complete image based on the basic",
+      "disk_size": "10",
+      "disk_type":"pd-standard",
+      "network":"default",
+      "tags":["http-server","https-server","puma-server"]
+      }
+    ],
+    "provisioners": [      
+      {
+        "type": "shell",
+        "script": "files/deploy.sh",
+        "execute_command": "sudo {{.Path}}"
+      }
+    ]
+  }
