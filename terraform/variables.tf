@@ -44,5 +44,5 @@ variable tags_app_name {
 
 variable num_devices {
   description = ""
-  default = "4"
+  default     = "4"
 }

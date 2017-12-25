@@ -30,7 +30,7 @@ resource "google_compute_instance" "app" {
   # чтобы изменить количество создаваемых инстансов изменить переменную в
   # variables.tf
   count = "${var.num_devices}"
-  
+
   name         = "${var.tags_app_name}-${count.index}"
   machine_type = "${var.machine_type}"
   zone         = "${var.region_zone}"
@@ -71,7 +71,7 @@ resource "google_compute_instance_group" "all-puma-group" {
   description = "Terraform testing instance group"
 
   instances = [
-    "${google_compute_instance.app.*.self_link}",    
+    "${google_compute_instance.app.*.self_link}",
   ]
 
   named_port {

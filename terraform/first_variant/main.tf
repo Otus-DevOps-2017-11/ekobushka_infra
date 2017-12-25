@@ -56,12 +56,10 @@ resource "google_compute_instance" "app1" {
     agent       = false
     private_key = "${file(var.private_sshkey_path)}"
   }
-
   provisioner "file" {
     source      = "files/puma.service"
     destination = "/tmp/puma.service"
   }
-
   provisioner "remote-exec" {
     script = "files/deploy.sh"
   }
@@ -98,12 +96,10 @@ resource "google_compute_instance" "app2" {
     agent       = false
     private_key = "${file(var.private_sshkey_path)}"
   }
-
   provisioner "file" {
     source      = "files/puma.service"
     destination = "/tmp/puma.service"
   }
-
   provisioner "remote-exec" {
     script = "files/deploy.sh"
   }
