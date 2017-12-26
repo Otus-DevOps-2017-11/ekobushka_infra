@@ -1,0 +1,6 @@
+project = "your_project_id"
+public_sshuser = "yuor_ssh_user"
+public_sshkey_path = "~/.ssh/yuor_ssh_user.pub"
+private_sshkey_path = "~/.ssh/yuor_ssh_user"
+disk_image = "reddit-base"
+tags_app_name = "reddit-app"
