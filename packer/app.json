@@ -1,0 +1,33 @@
+{
+  "Variables":
+    {
+    "gcp_project_id": null,
+    "gcp_source_image_family": null,
+    "gcp_source_image_family_deploy_based": null,
+    "gcp_machine_type": "f1-micro"
+    },
+  "builders": [
+    {
+    "type": "googlecompute",
+    "project_id": "{{user `gcp_project_id`}}",
+    "image_name": "{{user `gcp_source_image_family_deploy_based`}}-app-{{timestamp}}",
+    "image_family": "{{user `gcp_source_image_family_deploy_based`}}-app",
+    "source_image_family": "{{user `gcp_source_image_family`}}",
+    "zone": "europe-west1-b",
+    "ssh_username": "appuser",
+    "machine_type": "{{user `gcp_machine_type`}}",
+    "image_description": "Otus homework-09. Сreate a basic image with app",
+    "disk_size": "10",
+    "disk_type":"pd-standard",
+    "network":"default",
+    "tags":["http-server","https-server"]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "scripts/install_ruby.sh",
+      "execute_command": "sudo {{.Path}}"
+    }
+  ]
+}
