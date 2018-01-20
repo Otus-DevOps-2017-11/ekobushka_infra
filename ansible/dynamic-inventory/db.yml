@@ -1,11 +1,11 @@
 ---
 - name: Configure MongoDB
-  hosts: db
+  hosts: reddit-db
   become: true
-
-  vars:
+  
+  vars: 
     mongo_bind_ip: 0.0.0.0
-
+  
   tasks:
     - name: Change mongo config file
       template:

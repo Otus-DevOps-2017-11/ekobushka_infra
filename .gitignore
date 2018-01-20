@@ -6,3 +6,5 @@ packer/variables.json
 .terraform/
 *.retry
 ansible/terraform-test/
+ansible/dynamic-inventory/gce.ini
+ansible/dynamic-inventory/Infra-*.json

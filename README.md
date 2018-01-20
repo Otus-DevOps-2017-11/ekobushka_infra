@@ -1,8 +1,213 @@
-
-DevOps Homework-10 by Eugeny Kobushka
+DevOps Homework-11 by Eugeny Kobushka
 -------------------------------------
 
 ***
+**Задание:** Подход: один плейбук, один сценарий (play)
+
+Создаем плейбук reddit_app.yml. Выполнил все как описано в домашнем задании. Также выполнил все сопутствующие мелкие задания.
+
+На мой взгляд такой подход совсем не практичный.
+1. Не возможно переиспользовать плейбуки без существенной переработки.
+2. Пройдет совсем немного времени и забудется использование тегов и лимитов.
+
+Единственный вариант, который я вижу при данном подходе - это вариант подготовки заранее shell-скриптов с уже прописанными тегами и лимитами.
+
+Создание инфраструктуры:
+1. на основе сценария терраформа для стейдж-окружения создал сценарий без установки пакетов и приложений.
+```note
+закоментировать все провижинеры в модулях
++ нам не нужно для тестирования сохранение стейт-файла
+```
+2. Выполнить следующие команды:
+```bash
+terraform init
+terraform apply -auto-approv=false
+# в выводе будет
+#  Outputs:
+#  app_external_ip = [
+#      35.195.158.193,
+#      104.199.21.27
+#  ]
+#  db_external_ip = 35.195.195.117
+#  db_internal_ip = 10.132.0.4
+# Это заносим в инвентарь и в переменную db_host
+
+# тестовый прогон плейбука с лимитами и тегами
+sudo ansible-playbook reddit_app.yml --check --limit db --tags db-tag
+sudo ansible-playbook reddit_app.yml --check --limit app --tags app-tag
+sudo ansible-playbook reddit_app.yml --check --limit app --tags deploy-tag
+# выполняем плейбук, т.к. ошибок не обнаружено
+sudo ansible-playbook reddit_app.yml --limit db --tags db-tag
+sudo ansible-playbook reddit_app.yml --limit app --tags app-tag
+sudo ansible-playbook reddit_app.yml --limit app --tags deploy-tag
+```
+Проверим правильность выполнения нашего плейбука
+Http://app_external_ip:9292
+
+Убеждаемся что все работает и удаляем созданную инфраструктуру
+```bash
+terraform destroy
+```
+
+**Задание:** Подход: один плейбук, но много сценариев
+
+Создаем плейбук reddit_app2.yml. Выполнил все как описано в домашнем задании. Также выполнил все сопутствующие мелкие задания.
+
+В этом подходе уже больше порядка, но все же есть существенные ограничения в целом повторяющие предыдущий подход.
+
+Создание инфраструктуры:
+1. на основе сценария терраформа для стейдж-окружения создал сценарий без установки пакетов и приложений.
+```note
+закоментировать все провижинеры в модулях
++ нам не нужно для тестирования сохранение стейт-файла
+```
+2. Выполнить следующие команды:
+```bash
+terraform init
+terraform apply -auto-approv=false
+# в выводе будет
+#  Outputs:
+#  app_external_ip = [
+#      35.195.158.193,
+#      104.199.21.27
+#  ]
+#  db_external_ip = 35.195.195.117
+#  db_internal_ip = 10.132.0.4
+# Это заносим в инвентарь и в переменную db_host
+
+# тестовый прогон плейбука с лимитами и тегами
+sudo ansible-playbook reddit_app2.yml --tags db-tag --check
+sudo ansible-playbook reddit_app2.yml --tags app-tag --check
+sudo ansible-playbook reddit_app2.yml --tags deploy-tag --check
+# выполняем плейбук, т.к. ошибок не обнаружено
+sudo ansible-playbook reddit_app2.yml --tags db-tag
+sudo ansible-playbook reddit_app2.yml --tags app-tag
+sudo ansible-playbook reddit_app2.yml --tags deploy-tag
+```
+Проверим правильность выполнения нашего плейбука
+Http://app_external_ip:9292
+
+Убеждаемся что все работает и удаляем созданную инфраструктуру
+```bash
+terraform destroy
+```
+
+**Задание:** Подход: много плейбуков
+
+Переименовываем плейбуки предыдущих подходов:
+reddit_app.yml -> reddit_app_one_play.yml
+reddit_app2.yml-> reddit_app_multiple_plays.yml
+
+Создаем следующие плейбуки:
+* db.yml
+* app.yml
+* deploy.yml
+* site.yml
+
+Здесь уже можно как-то упорядочить структуру плейбуков и появляется возможность переиспользовать готовые плейбуки после некоторой доработки.
+
+Создание инфраструктуры:
+1. на основе сценария терраформа для стейдж-окружения создал сценарий без установки пакетов и приложений.
+```note
+закоментировать все провижинеры в модулях
++ нам не нужно для тестирования сохранение стейт-файла
+```
+2. Выполнить следующие команды:
+```bash
+terraform init
+terraform apply -auto-approv=false
+# в выводе будет
+#  Outputs:
+#  app_external_ip = [
+#      35.195.158.193,
+#      104.199.21.27
+#  ]
+#  db_external_ip = 35.195.195.117
+#  db_internal_ip = 10.132.0.4
+# Это заносим в инвентарь и в переменную db_host
+
+# тестовый прогон плейбука с лимитами и тегами
+sudo ansible-playbook site.yml --check
+# выполняем плейбук, т.к. ошибок не обнаружено
+sudo ansible-playbook site.yml
+```
+Проверим правильность выполнения нашего плейбука
+Http://app_external_ip:9292
+
+Убеждаемся что все работает и удаляем созданную инфраструктуру
+```bash
+terraform destroy
+```
+
+**Задание со (*):** Исследуйте возможности использования dynamic inventory для GCP
+
+Для работы с инстансами Google Cloud Platform нашелся скрипт, написанный на питоне
+```bash
+wget https://raw.githubusercontent.com/ansible/ansible/devel/contrib/inventory/gce.py
+wget https://raw.githubusercontent.com/ansible/ansible/devel/contrib/inventory/gce.ini
+```
+
+Настройка для работы совсем не интуитивная. Пришлось поломать голову что же хотят в ini-файле.
+
+Идем в консоль GCP https://console.developers.google.com/
+Создаем service account key. Скачиваем json с ключом и запоминаем идентификатор сервисного аккаунта.
+
+заполняем ini-файл в соответствующих полях.
+
+проверяем что все работает:
+```bash
+.gce.py --list
+```
+в выводе должен быть json данными наших инстансов.
+
+Нашел как использовать для наших целей не прибегая к заполению inventory.
+Что нужно изменить в наших плейбуках:
+```yml
+# db.yml
+# вместо hosts: db
+hosts: reddit-db
+
+# app.yml
+# вместо hosts: app
+# инстансы создаются через count, поэтому получилось заставить работать вот такую запись
+hosts: reddit-app-*
+
+# deploy.yml аналогично
+```
+Как запустить на исполнение наш плейбук:
+```bash
+# тестовый прогон
+sudo ansible-playbook -i gce.py site.yml --check
+# исполнение
+sudo ansible-playbook -i gce.py site.yml
+```
+Убеждаемся что все работает открыв страничку сайта с нашим приложением.
+
+Не забываем удалять наши инстансы после проверки...
+
+Собрал выполненное задание в папку ansible/dynamic-inventory
+Может конечно не совсем правильно, но так вроде порядка больше в файлах...
+
+Внес заполненный ini-файл и json с сервисным ключом в .gitignore
+Добавил gce.ini.example - какие поля нужно заполнить чтобы все заработало...
+
+А вообще нашлись еще инструменты для парсинга инветори. Например:
+Парсинг стейт-файла терраформа
+1. Ansible dynamic inventory script for parsing Terraform state files https://github.com/mantl/terraform.py
+2. Terraform State → Ansible Dynamic Inventory https://github.com/adammck/terraform-inventory
+
+ну и думаю на этом список себя не исчерпывает...
+
+
+
+<br><br>
+<!-- Домашнее задание 09 завернул под кат -->
+
+***
+DevOps Homework-10 by Eugeny Kobushka (выполнено)
+-------------------------------------
+<details><br>
+
 **Выполнение задания:**
 
 **Установка клиента ansible**
@@ -204,7 +409,7 @@ appserver-2 | SUCCESS => {
 
 Каких-то заданий на исполнение комманд указано не было, поэтому я проделал все команды, которые были описаны в файле домашнего задания. Разобрался и увидел разницу в использовании модуля shell и остальных модулей для исполнения удаленных комманд.
 
-<br><br>
+<br></details><br>
 <!-- Домашнее задание 09 завернул под кат -->
 
 ***
