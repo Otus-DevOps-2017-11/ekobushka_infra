@@ -1,0 +1,26 @@
+---
+- name: Ryby and Bundler
+  hosts: all
+  become: true
+#  become_user: root
+#  become_method: sudo
+  vars:
+    app_list:
+      - ruby-bundler
+      - ruby-full
+      - build-essential
+  tasks:
+#  - name: Permittion for folder apt
+#    file:
+#      path: /var/lib/apt
+#      recurse: yes
+#      mode: 0700
+
+  - name: APT Update
+    apt:
+      update_cache: yes
+
+  - name: Install cycle apt
+    apt: "name={{ item }} state=present"
+    with_items:
+      - "{{ app_list }}"
