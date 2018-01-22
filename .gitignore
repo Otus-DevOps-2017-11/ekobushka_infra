@@ -8,3 +8,4 @@ packer/variables.json
 terraform/test/
 ansible/gce.ini
 ansible/Infra-*.json
+jdauphant.nginx

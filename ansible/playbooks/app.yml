@@ -5,8 +5,6 @@
     - reddit-app-*
   become: true
 
-  vars:
-    db_host: 10.132.0.3
-
   roles:
     - app
+    - jdauphant.nginx
