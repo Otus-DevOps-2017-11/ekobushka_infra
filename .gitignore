@@ -6,6 +6,7 @@ packer/variables.json
 .terraform/
 *.retry
 terraform/test/
-ansible/gce.ini
-ansible/Infra-*.json
+.ansible/
+gce.ini
+Infra-*.json
 jdauphant.nginx
