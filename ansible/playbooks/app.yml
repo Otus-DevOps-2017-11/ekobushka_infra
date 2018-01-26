@@ -1,6 +1,6 @@
 ---
 - name: Configure App
-  hosts: 
+  hosts:
     - app
     - reddit-app-*
   become: true

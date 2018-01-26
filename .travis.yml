@@ -1,6 +1,6 @@
----
-sudo: false
 dist: trusty
+
+sudo: false
 
 language: python
 python: "2.7"
@@ -14,26 +14,28 @@ before_install:
   - sudo apt-get -y update
 
 install:
-  - sudo apt install -y wget unzip
-  - pip install -r ansible>=2.4
+  - sudo apt install -y curl unzip
+  - pip install ansible
   - pip install ansible-lint
   # используем стандартный путь из переменной $PATH
   # устанавливаем packer, terraform и tflint
-  curl -L -o ./packer.zip https://releases.hashicorp.com/packer/1.1.3/packer_1.1.3_linux_amd64.zip && sudo unzip -o packer.zip -d /usr/local/bin && rm -f ./packer*.zip
-  curl -L -o ./terraform.zip https://releases.hashicorp.com/terraform/0.11.2/terraform_0.11.2_linux_amd64.zip && sudo unzip -o terraform.zip -d /usr/local/bin && rm -f ./terraform*.zip
-  curl -L -o ./tflint.zip https://github.com/wata727/tflint/releases/download/v0.5.4/tflint_linux_amd64.zip && sudo unzip -o tflint.zip -d /usr/local/bin &&rm -f ./tflint*.zip
+  - curl -L -o ./packer.zip https://releases.hashicorp.com/packer/1.1.3/packer_1.1.3_linux_amd64.zip && sudo unzip -o packer.zip -d /usr/local/bin && rm -f ./packer*.zip
+  - curl -L -o ./terraform.zip https://releases.hashicorp.com/terraform/0.11.2/terraform_0.11.2_linux_amd64.zip && sudo unzip -o terraform.zip -d /usr/local/bin && rm -f ./terraform*.zip
+  - curl -L -o ./tflint.zip https://github.com/wata727/tflint/releases/download/v0.5.4/tflint_linux_amd64.zip && sudo unzip -o tflint.zip -d /usr/local/bin &&rm -f ./tflint*.zip
   
   
 script:
-  # проверяем packer  
-  - packer validate -var-file=./packer/variables.json.example app-ansible.json
-  - packer validate -var-file=./packer/variables.json.example db-ansible.json
+  # проверяем packer
+  - cd packer
+  - packer validate -var-file=variables.json.example app-ansible.json
+  - packer validate -var-file=variables.json.example db-ansible.json
+  - cd ..
   
   # validating ansible playbooks
   - ansible-lint ./ansible/playbooks/site.yml
 
   # terraform validate
-  - for i in {prod,stage}; do cd ./terraform/$i; terraform init; terraform validate --var-file=terraform.tfvars.example; tflint --var-file=terraform.tfvars.example --error-with-issues; cd ../../; done
+  - for i in {prod,stage}; do cd ./terraform/$i; rm -f backend.tf;  terraform init; terraform validate --var-file=terraform.tfvars.example; tflint --var-file=terraform.tfvars.example --error-with-issues; cd ../../; done
 
 notifications:
   email: false
