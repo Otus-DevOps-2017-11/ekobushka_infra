@@ -61,3 +61,17 @@ resource "google_compute_firewall" "firewall_puma" {
   source_ranges = ["0.0.0.0/0"]
   target_tags   = ["${var.tags_app_name}"]
 }
+
+# Правило файрвола для nginx на 80 порту
+resource "google_compute_firewall" "firewall_puma_http_80" {
+  name    = "allow-puma-http-80-default"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["${var.tags_app_name}"]
+}
